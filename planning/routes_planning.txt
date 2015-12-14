@@ -1,0 +1,81 @@
+Planned server access routes...
+
+Login/Register: (This functinoality will be provided by "Passport")
+  /signup
+    -POST: A JSON object containing a username and password
+      -if there is already a user with that username, throws error.
+      -if username isn't taken, creates a new user with that username and password.
+      -also creates an empty profile with this user's ID
+  /login
+    -POST: A JSON object containing a username and password
+      -if credentials are correct, creates a session cookie for the user and returns JSON of the user's ID and username ONLY.
+      -if credentials are incorrect, throws error.
+  /logout
+    -Any method, usually GET:
+      -if there is a current user session cookie, deletes it.
+      -if there is no current user, throws error.
+  /changePassword
+    -PATCH: A JSON object containing the new password
+      -if the user is not logged in, throw error.
+      -if the user is logged in, changes password of that user to the new password.
+
+
+Profiles: (Each user has one)
+  /profile
+    -If there is no current user, throw error.
+    -GET:
+      -If the user is logged in, return JSON with the current user's profile
+    -PATCH: JSON object containing profile information
+      -If the user is logged in, update the current user's profile with the new information
+      -returns a JSON object with the new profile information
+  /profile/:id
+    -GET:
+      -returns JSON with the profile of the user with the specified ID
+  /profile/trust
+    -if there is no current user, throw error.
+    -GET:
+      -returns a JSON object with a list of all the User profiles the current user "trusts"
+      -this is based on the trustedIDs array in the current user profile.
+    -POST: JSON object containing a user's ID
+      -if user with that ID does not exist, throw error.
+      -if the ID is of the current user, throw error.
+      -if the ID id already in the trustedIDs array, throw error.
+      -adds that user ID to the current user's list of "trusted" users (trustedIDs array)
+    -DELETE: JSON object containing a user's ID
+      -if user with ID is not in current user's "trusted" list, throw error.
+      -removes that user ID from the current user's list of "trusted" users.
+
+
+Questions: (A user can have many of these)
+  /question
+    -GET:
+      -returns a JSON object with a list of all question objects
+    -POST: JSON object containing a question to be posted
+      -if there is no current user, throw error.
+      -creates a new question with the ID of the current user.
+      -returns JSON of the newly created question.
+  /question/:id
+    -GET:
+      -returns a JSON object of a question with the specified ID
+      -if there is no question with that ID, throws error.
+    -POST: JSON object containing an answer to be posted to the question with the specified ID
+      -if the ID is to a question the current user owns, throws error.
+      -if there is no current user, throws error.
+      -creates an answer with the ID of the question and the ID of the current user
+      -updates the specified question and adds the ID of the answer to an array in that question
+      -returns the JSON of the question that was answered. (to be used to swtitch to a single view of that question)
+    -PATCH: JSON object of updated question information
+      -if there is no question with that ID, throws error.
+      -if there is no current user, throw error.
+      -if the current user does not own the specified question, throw error.
+      -updates the question that was specified with the new information
+    -DELETE:
+      -if there is no question with that ID, throws error.
+      -if there is no current user, throw error.
+      -if the current user does not own the specified question, throw error.
+      -deletes the specified question.
+  /question/user/:id
+    -GET:
+      -if no user with that ID exists, throw error.
+      -returns a JSON object of all the questions made by the specified user ID
+
