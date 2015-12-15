@@ -6,6 +6,7 @@ mongoose.Promise = Promise;
 
 mongoose.model('User', require('./User'));
 mongoose.model('Profile', require('./Profile'));
+mongoose.model('Question', require('./Question'));
 
 mongoose.connect(process.env.MONGODB_URI);
 
