@@ -72,7 +72,18 @@ module.exports = {
 
   byID: {
     get: function(req, res, next) {
-      res.json({message: "Nuu... Stahp eet"});
+      Question.findById(req.params.id).exec()
+        .then(function (question) {
+          if (!question) {
+            var err = new Error("Question doesn't exist");
+            return next(err);
+          }
+          res.json(question);
+        })
+        .catch(function (err) {
+          return next(err);
+        })
+      ;
     },
 
     post: function(req, res, next) {
@@ -80,11 +91,66 @@ module.exports = {
     },
 
     patch: function(req, res, next) {
-      res.json({message: "Nuu... Stahp eet"});
+      if (!req.user) {
+        var err = new Error("Log in first");
+        return next(err);
+      }
+
+      Question.findById(req.params.id).exec()
+        .then(function (question) {
+          if (!question) {
+            var err = new Error("Question doesn't exist");
+            return next(err);
+          } else if (question.userID !== req.user._id.toString()) {
+            var err = new Error("This Question doesn't belong to you");
+            return next(err);
+          }
+
+          var body = req.body;
+          body.userID = req.user._id.toString();
+          body.username = req.user.userName;
+
+          Question.update({_id: req.params.id}, body)
+            .then(function () {
+              Question.findById(req.params.id).exec()
+                .then(function (question) {
+                  res.json(question);
+                })
+              ;
+            })
+          ;
+        })
+        .catch(function (err) {
+          return next(err);
+        })
+      ;
     },
 
     del: function(req, res, next) {
-      res.json({message: "Nuu... Stahp eet"});
+      if (!req.user) {
+        var err = new Error("Log in first");
+        return next(err);
+      }
+
+      Question.findById(req.params.id).exec()
+        .then(function (question) {
+          if (!question) {
+            var err = new Error("Question doesn't exist");
+            return next(err);
+          } else if (question.userID !== req.user._id.toString()) {
+            var err = new Error("This Question doesn't belong to you");
+            return next(err);
+          }
+          Question.remove({_id: req.params.id})
+            .then(function () {
+              res.sendStatus(200);
+            })
+          ;
+        })
+        .catch(function (err) {
+          return next(err);
+        })
+      ;
     }
   }
 };
