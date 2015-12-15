@@ -44,13 +44,30 @@ module.exports = {
 
   user: {
     get: function(req, res, next) {
-      res.json({message: "Nuu... Stahp eet"});
+      if (!req.user) {
+        var err = new Error("Log in first");
+        return next(err);
+      }
+      Question.find({userID: req.user._id.toString()}).exec()
+        .then(function (questions) {
+          res.json(wrap('questions', questions));
+        })
+        .catch(function (err) {
+          return next(err);
+        })
+      ;
     },
 
     getByID: function(req, res, next) {
-      res.json({message: "Nuu... Stahp eet"});
+      Question.find({userID: req.params.id}).exec()
+        .then(function (questions) {
+          res.json(wrap('questions', questions));
+        })
+        .catch(function (err) {
+          return next(err);
+        })
+      ;
     }
-
   },
 
   byID: {
