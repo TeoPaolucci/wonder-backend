@@ -141,9 +141,12 @@ module.exports = {
     },
 
     post: function(req, res, next) {
-      // if not logged in or provided id is the same as the logged in user's id thraows an error.
+      // if not logged in or provided id is the same as the logged in user's id, or no id provided throws an error.
       if(!req.user) {
         var err = new Error("Log in first");
+        return next(err);
+      } else if (!req.body.id) {
+        var err = new Error("No ID provided");
         return next(err);
       } else if (req.user._id.toString() === req.body.id) {
         var err = new Error("You can't add your own profile");
@@ -194,6 +197,9 @@ module.exports = {
       if(!req.user) {
         var err = new Error("Log in first");
         return next(err);
+      } else if (!req.body.id) {
+        var err = new Error("No ID provided");
+        return next(err);
       }
 
       Profile.findOne({userID: req.user._id.toString()}).exec()
@@ -213,6 +219,10 @@ module.exports = {
             return false;
           }
           var oldIdIndex = trustedIDList.indexOf(searchList);
+          if (oldIdIndex === -1) {
+            var err = new Error("ID not found in list of trusted users");
+            return next(err);
+          }
           trustedIDList.splice(oldIdIndex, 1);
 
           Profile.update({userID: req.user._id.toString()}, {trustedIDs: trustedIDList})
