@@ -8,7 +8,10 @@ var profileSchema = new Schema({
     type: String,
     required: true
   },
-  username: String,
+  username: {
+    type: String,
+    required: true
+  },
   first_name: String,
   last_name: String,
   dob: String,
