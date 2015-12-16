@@ -1,7 +1,7 @@
 'use strict';
 
 var Question = require('../models').model('Question');
-// var Answer = require('../models').model('Answer');
+var Answer = require('../models').model('Answer');
 
 var wrap = function wrap(root, formData) {
     var wrapper = {};
@@ -78,7 +78,13 @@ module.exports = {
             var err = new Error("Question doesn't exist");
             return next(err);
           }
-          res.json(question);
+          var q = question;
+          Answer.find({questionID: req.params.id}).exec()
+            .then(function (a) {
+              var result = {"question": q, "answers": a};
+              res.json(result);
+            })
+          ;
         })
         .catch(function (err) {
           return next(err);
@@ -87,7 +93,44 @@ module.exports = {
     },
 
     post: function(req, res, next) {
-      res.json({message: "Nuu... Stahp eet"});
+      if (!req.user) {
+        var err = new Error("Log in first");
+        return next(err);
+      }
+
+      Question.findById(req.params.id).exec()
+        .then(function (question) {
+          if (!question) {
+            var err = new Error("Question does not exist");
+            return next(err);
+          }
+
+          var body = req.body;
+          body.userID = req.user._id.toString();
+          body.questionID = req.params.id;
+          body.username = req.user.userName;
+
+          Answer.create(body)
+            .then(function () {
+              // this.byID.get(req, res, next);
+              Question.findById(req.params.id).exec()
+                .then(function (question) {
+                  var q = question;
+                  Answer.find({questionID: req.params.id}).exec()
+                    .then(function (a) {
+                      var result = {"question": q, "answers": a};
+                      res.json(result);
+                    })
+                  ;
+                })
+              ;
+            })
+          ;
+        })
+        .catch(function (err) {
+          return next(err);
+        })
+      ;
     },
 
     patch: function(req, res, next) {
@@ -143,7 +186,11 @@ module.exports = {
           }
           Question.remove({_id: req.params.id})
             .then(function () {
-              res.sendStatus(200);
+              Answer.remove({questionID: req.params.id})
+                .then(function () {
+                  res.sendStatus(200);
+                })
+              ;
             })
           ;
         })

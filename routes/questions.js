@@ -20,13 +20,15 @@ router.get('/user/:id', questCtrl.user.getByID);
 
 // question id routes '/question/:id'
 router.route('/:id')
-  // GET that question
+  // GET that question with all  answers
+  // json returned is: {"question": {question object}, "answers": [array of answer objects]}
   .get(questCtrl.byID.get)
   // POST an ANSWER to that question
   .post(questCtrl.byID.post)
   // PATCH the question with new info
   .patch(questCtrl.byID.patch)
   // DELETE that question
+  // and all associated answers.
   .delete(questCtrl.byID.del)
 ;
 
