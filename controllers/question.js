@@ -33,7 +33,17 @@ module.exports = {
 
       Question.create(body)
         .then(function (newQuestion) {
-          res.json(newQuestion);
+          Question.findById(newQuestion._id).exec()
+            .then(function (question) {
+              var q = question;
+              Answer.find({questionID: req.params.id}).exec()
+                .then(function (a) {
+                  var result = {"question": q, "answers": a};
+                  res.json(result);
+                })
+              ;
+            })
+          ;
         })
         .catch(function (err) {
           return next(err);
