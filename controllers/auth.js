@@ -10,7 +10,7 @@ module.exports = {
     root : {
         get : function(req, res) {
             res.json({
-                title : (req.user && req.user.userName) || 'Nobody'
+                id : (req.user && req.user._id.toString()) || 'Nobody'
             });
         }
     },
