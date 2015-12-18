@@ -10,15 +10,15 @@ module.exports = {
     root : {
         get : function(req, res) {
             res.json({
-                title : (req.user && req.user.userName) || 'Nobody'
+                id : (req.user && req.user._id.toString()) || 'Nobody'
             });
         }
     },
     login : {
-        post : passport.authenticate('local', {
-            successRedirect : '/',
-            failureRedirect : '/'
-        })
+        post : passport.authenticate('local'),
+        all : function(req, res) {
+            res.sendStatus(200);
+        }
     },
     logout : {
         all : function(req, res, next) {
