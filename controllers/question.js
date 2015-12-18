@@ -167,7 +167,13 @@ module.exports = {
             .then(function () {
               Question.findById(req.params.id).exec()
                 .then(function (question) {
-                  res.json(question);
+                  var q = question;
+                  Answer.find({questionID: req.params.id}).exec()
+                    .then(function (a) {
+                      var result = {"question": q, "answers": a};
+                      res.json(result);
+                    })
+                  ;
                 })
               ;
             })
