@@ -1,0 +1,50 @@
+User: (Provided by Passport)
+  -object ID (_id)
+  -username
+  -password_digest
+
+Profile:
+  -object ID (_id)
+  -userID
+    -"_id" of a single User object as a string.
+    -REQUIRED
+  -first_name, string
+  -last_name, string
+  -Date of birth (dob), string
+  -email, string
+  -trustedIDs
+    -starts as an empty array.
+    -populated with "_id"s of other user objects as strings.
+
+Question:
+  -object ID (_id)
+  -userID
+    -"_id" of a single User object as a string, the user who created the question.
+    -REQUIRED
+  -title
+    -a string containing the title of the question or the question itself.
+    -REQUIRED
+  -choices
+    -an array of strings that contain the names of certain answers.
+    -this is for ["yes", "no"] or ["A", "B", "C", "D"] kind of questions.
+    -if ommitted, should not be rendered.
+  -description
+    -a string containing a further description of the question being asked.
+    -if ommitted, should not be rendered.
+
+
+Answer:
+  -object ID (_id)
+  -userID
+    -"_id" of a single User object as a string, the user who created the answer.
+    -REQUIRED
+  -questionID
+    -"_id" of a single Question object as a string, the Question this Answer belongs to.
+    -REQUIRED
+  -title
+    -a string containing the title of the answer.
+    -REQUIRED
+  -choice
+    -a string matching one of the strings in the "choices" array in the related question.
+  -description
+    -a string containing a more detailed description of the answer.
