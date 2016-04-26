@@ -25,7 +25,7 @@ var app = express();
 app.use(logger('dev'));
 // cors stuff
 app.use(cors({
-  origin: ['http://localhost:5000'],
+  origin: ['http://teopaolucci.github.io/I-Wonder'],
   credentials: true
 }));
 
